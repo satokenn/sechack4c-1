@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>フェーズ4：調査・分析（デモ）</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>フェーズ4：調査・分析（ドラッグ＆ドロップ体験）</h1>
+      <p>ツールボックスからアイテムをドラッグして、対応する調査エリアにドロップしてください。</p>
+    </header>
+
+    <main class="container">
+      <section class="toolbox">
+        <h2>ツールボックス</h2>
+        <ul>
+          <li draggable="true" id="file-suspicious" data-type="file">不審なファイル: invoice_malware.exe</li>
+          <li draggable="true" id="file-benign" data-type="file">正常ファイル: readme.txt</li>
+          <li draggable="true" id="mail-log" data-type="log">メールログ: 請求書.zip を受信</li>
+        </ul>
+      </section>
+
+      <section class="workarea">
+        <div class="dropzone" id="scan-zone">
+          <h3>不審なファイルのスキャンエリア</h3>
+          <div class="hint">ここにファイルをドロップ</div>
+          <div class="result" id="scan-result"></div>
+        </div>
+
+        <div class="dropzone" id="log-zone">
+          <h3>メールログ解析エリア</h3>
+          <div class="hint">ここにメールログをドロップ</div>
+          <div class="result" id="log-result"></div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="explain">
+      <h3>操作と学び</h3>
+      <ol>
+        <li>不審なファイルをスキャンしてマルウェアを特定します（実際はサンプルです）。</li>
+        <li>メールログを解析して侵入経路（標的型メールなど）を特定します。</li>
+        <li>正しい組み合わせで解析が進むと次のフェーズに進む学びが得られます。</li>
+      </ol>
+    </aside>
+
+    <script src="app.js"></script>
+  </body>
+</html>

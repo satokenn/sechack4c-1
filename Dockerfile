@@ -1,0 +1,21 @@
+# Node.js 18 LTS をベースにした開発・ビルド用コンテナ
+FROM node:18-alpine AS base
+
+# 依存関係と成果物を格納する作業ディレクトリ
+WORKDIR /app
+
+# package.json と lock ファイルを先にコピーして依存関係だけをキャッシュ
+# ※ npm を想定。pnpm / yarn を使用する場合は適宜置き換える。
+COPY package*.json ./
+
+# 依存関係のインストール。--legacy-peer-deps は互換性のための保険。
+RUN npm install --legacy-peer-deps
+
+# 残りのソースをまとめてコピー
+COPY tsconfig.json ./
+COPY src ./src
+COPY tests ./tests
+
+# デフォルトは開発用の実行コマンド
+# npm scripts が整備されるまでは `npm run dev` と読み替える
+CMD ["npm", "run", "dev"]
