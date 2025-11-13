@@ -4,18 +4,53 @@ interface Phase4Props {
   onNext?: () => void
 }
 
-type ItemType = 'file-suspicious' | 'file-benign' | 'mail-log'
-
-interface Item {
-  id: ItemType
-  label: string
-  type: 'file' | 'log'
+interface Email {
+  id: string
+  from: string
+  subject: string
+  date: string
+  attachment?: string
+  isMalicious: boolean
 }
 
-const ITEMS: Item[] = [
-  { id: 'file-suspicious', label: '不審なファイル: invoice_malware.exe', type: 'file' },
-  { id: 'file-benign', label: '正常ファイル: readme.txt', type: 'file' },
-  { id: 'mail-log', label: 'メールログ: 請求書.zip を受信', type: 'log' }
+interface SelectedEmail {
+  email: Email
+  attachment: string
+}
+
+const EMAILS: Email[] = [
+  {
+    id: 'email1',
+    from: 'accounting@partner-corp.co.jp',
+    subject: '【重要】11月分請求書の送付',
+    date: '2024/11/10 14:23',
+    attachment: '請求書_202411.xlsx',
+    isMalicious: false
+  },
+  {
+    id: 'email2',
+    from: 'support@secure-update.com',
+    subject: 'セキュリティアップデートのお知らせ',
+    date: '2024/11/11 09:47',
+    attachment: 'security_patch.exe',
+    isMalicious: true
+  },
+  {
+    id: 'email3',
+    from: 'hr@company-internal.jp',
+    subject: '社内向け：年末調整資料',
+    date: '2024/11/12 16:15',
+    attachment: '年末調整_案内.pdf',
+    isMalicious: false
+  },
+  {
+    id: 'email4',
+    from: 'noreply@cloud-storage.jp',
+    subject: 'ファイル共有の通知',
+    date: '2024/11/13 10:02',
+    attachment: '共有ドキュメント.pdf.scr',
+    isMalicious: true
+  }
 ]
 
 export default function Phase4({ onNext }: Phase4Props) {
@@ -41,33 +76,28 @@ export default function Phase4({ onNext }: Phase4Props) {
 
   function handleDropOnScan(e: React.DragEvent) {
     e.preventDefault()
-    if (!draggedItem) return
+    if (!draggedAttachment) return
 
-    if (draggedItem === 'file-suspicious') {
-      setScanResult('マルウェア検出: invoice_malware.exe')
-      setScanSuccess(true)
-    } else if (draggedItem === 'file-benign') {
-      setScanResult('問題なし: readme.txt（スキャン結果：正常）')
-      setScanSuccess(false)
+    const { email, attachment } = draggedAttachment
+    
+    if (email.isMalicious) {
+      setScanResult(
+        `⚠️ マルウェア検出！\n` +
+        `ファイル名: ${attachment}\n` +
+        `検出内容: トロイの木馬型マルウェア\n` +
+        `危険度: 高\n` +
+        `送信元: ${email.from}`
+      )
+      setFoundMalware(true)
     } else {
-      setScanResult('期待するファイルをドロップしてください')
-      setScanSuccess(false)
+      setScanResult(
+        `✅ スキャン完了\n` +
+        `ファイル名: ${attachment}\n` +
+        `結果: 問題なし（安全）\n` +
+        `送信元: ${email.from}`
+      )
     }
-    setDraggedItem(null)
-  }
-
-  function handleDropOnLog(e: React.DragEvent) {
-    e.preventDefault()
-    if (!draggedItem) return
-
-    if (draggedItem === 'mail-log') {
-      setLogResult('侵入経路特定: 標的型メール（請求書.zip）を開封 → マクロ実行で感染の可能性')
-      setLogSuccess(true)
-    } else {
-      setLogResult('メールログをドロップしてください')
-      setLogSuccess(false)
-    }
-    setDraggedItem(null)
+    setDraggedAttachment(null)
   }
 
   function handleDragOver(e: React.DragEvent) {
@@ -76,79 +106,102 @@ export default function Phase4({ onNext }: Phase4Props) {
 
   return (
     <div className="phase4">
-      <h2>フェーズ4：調査・分析（ドラッグ＆ドロップ）</h2>
-      <p>ツールボックスからアイテムをドラッグして、対応する調査エリアにドロップしてください。</p>
+      <h2>フェーズ4：調査・分析</h2>
+      <p>鈴木さんが受信したメールを調査し、不審な添付ファイルを特定してください。</p>
 
       <div className="container">
-        <section className="toolbox">
-          <h3>ツールボックス</h3>
-          <ul>
-            {ITEMS.map((item) => (
-              <li
-                key={item.id}
-                draggable
-                onDragStart={() => handleDragStart(item.id)}
-                onDragEnd={handleDragEnd}
-                className={`tool-item ${draggedItem === item.id ? 'dragging' : ''}`}
+        <section className="email-list">
+          <h3>📧 受信メール一覧</h3>
+          <div className="emails">
+            {EMAILS.map((email) => (
+              <div
+                key={email.id}
+                className={`email-item ${selectedEmail?.id === email.id ? 'selected' : ''}`}
+                onClick={() => handleEmailClick(email)}
               >
-                {item.type === 'file' ? '📄' : '📧'} {item.label}
-              </li>
+                <div className="email-header">
+                  <strong>{email.subject}</strong>
+                </div>
+                <div className="email-meta">
+                  <span>差出人: {email.from}</span>
+                  <span>{email.date}</span>
+                </div>
+                {email.attachment && (
+                  <div className="email-attachment">
+                    � 添付ファイル: {email.attachment}
+                  </div>
+                )}
+              </div>
             ))}
-          </ul>
+          </div>
         </section>
 
-        <section className="workarea">
-          <div
-            className={`dropzone ${scanSuccess ? 'success' : ''}`}
-            onDrop={handleDropOnScan}
-            onDragOver={handleDragOver}
-          >
-            <h3>不審なファイルのスキャンエリア</h3>
-            {!scanResult && <div className="hint">ここにファイルをドロップ</div>}
-            {scanResult && (
-              <div className={`result ${scanSuccess ? 'success' : 'fail'}`}>
-                {scanSuccess ? '✅ ' : '❌ '}
-                {scanResult}
+        <section className="detail-area">
+          {!selectedEmail ? (
+            <div className="hint-box">
+              <p>👈 左のメール一覧からメールを選択してください</p>
+            </div>
+          ) : (
+            <>
+              <div className="email-detail">
+                <h3>{selectedEmail.subject}</h3>
+                <div className="detail-row">
+                  <span className="label">差出人:</span>
+                  <span>{selectedEmail.from}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="label">日時:</span>
+                  <span>{selectedEmail.date}</span>
+                </div>
+                {selectedEmail.attachment && (
+                  <div
+                    className={`attachment-box ${draggedAttachment?.email.id === selectedEmail.id ? 'dragging' : ''}`}
+                    draggable
+                    onDragStart={() => handleDragStart(selectedEmail)}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <div className="attachment-icon">📎</div>
+                    <div className="attachment-name">{selectedEmail.attachment}</div>
+                    <div className="drag-hint">👆 ドラッグしてスキャンエリアへ</div>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
 
-          <div
-            className={`dropzone ${logSuccess ? 'success' : ''}`}
-            onDrop={handleDropOnLog}
-            onDragOver={handleDragOver}
-          >
-            <h3>メールログ解析エリア</h3>
-            {!logResult && <div className="hint">ここにメールログをドロップ</div>}
-            {logResult && (
-              <div className={`result ${logSuccess ? 'success' : 'fail'}`}>
-                {logSuccess ? '✅ ' : '❌ '}
-                {logResult}
+              <div
+                className={`scan-zone ${foundMalware ? 'alert' : ''}`}
+                onDrop={handleDropOnScan}
+                onDragOver={handleDragOver}
+              >
+                <h3>🔍 ファイルスキャンエリア</h3>
+                {!scanResult ? (
+                  <div className="hint">添付ファイルをここにドロップしてスキャン</div>
+                ) : (
+                  <pre className="scan-result">{scanResult}</pre>
+                )}
               </div>
-            )}
-          </div>
+            </>
+          )}
         </section>
       </div>
 
-      {allCompleted && (
+      {foundMalware && (
         <div className="completion-message">
-          <h3>🎉 調査完了！</h3>
-          <p>マルウェアの特定と侵入経路の解明ができました。</p>
-          <p>次は横展開の有無を確認し、対処を実施します。</p>
+          <h3>� マルウェアを特定しました！</h3>
+          <p>不審なファイルの発見に成功しました。次のステップに進みましょう。</p>
           {onNext && (
             <button onClick={onNext} className="btn-primary">
-              次へ（横展開調査フェーズ）
+              次へ（封じ込めフェーズ）
             </button>
           )}
         </div>
       )}
 
       <aside className="explain">
-        <h3>操作と学び</h3>
+        <h3>💡 操作方法</h3>
         <ol>
-          <li>不審なファイルをスキャンしてマルウェアを特定します。</li>
-          <li>メールログを解析して侵入経路（標的型メールなど）を特定します。</li>
-          <li>正しい組み合わせで解析が進むと次のフェーズに進めます。</li>
+          <li>受信メール一覧から各メールをクリックして内容を確認</li>
+          <li>添付ファイルをドラッグ＆ドロップでスキャンエリアに移動</li>
+          <li>スキャン結果を確認し、マルウェアを特定する</li>
         </ol>
       </aside>
 
@@ -159,123 +212,242 @@ export default function Phase4({ onNext }: Phase4Props) {
 
         .container {
           display: flex;
-          gap: 30px;
+          gap: 20px;
           margin: 30px 0;
+          height: 600px;
         }
 
-        .toolbox {
+        /* メール一覧パネル */
+        .email-list {
           flex: 1;
-          background: #f5f5f5;
+          background: #f8f9fa;
           border-radius: 8px;
-          padding: 20px;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
         }
 
-        .toolbox h3 {
-          margin-top: 0;
-          color: #333;
-        }
-
-        .toolbox ul {
-          list-style: none;
-          padding: 0;
+        .email-list h3 {
           margin: 0;
+          padding: 15px;
+          background: #e9ecef;
+          color: #495057;
+          font-size: 16px;
+          border-bottom: 1px solid #dee2e6;
         }
 
-        .tool-item {
+        .emails {
+          flex: 1;
+          overflow-y: auto;
+          padding: 10px;
+        }
+
+        .email-item {
           background: white;
-          border: 2px solid #ddd;
+          border: 2px solid #dee2e6;
           border-radius: 6px;
-          padding: 12px 15px;
-          margin: 10px 0;
-          cursor: move;
+          padding: 12px;
+          margin-bottom: 10px;
+          cursor: pointer;
           transition: all 0.2s;
-          user-select: none;
         }
 
-        .tool-item:hover {
+        .email-item:hover {
           border-color: #4a9eff;
-          transform: translateX(5px);
-          box-shadow: 0 2px 8px rgba(74, 158, 255, 0.3);
+          box-shadow: 0 2px 8px rgba(74, 158, 255, 0.2);
         }
 
-        .tool-item.dragging {
-          opacity: 0.5;
-          transform: rotate(5deg);
+        .email-item.selected {
+          border-color: #4a9eff;
+          background: #e7f3ff;
         }
 
-        .workarea {
+        .email-header {
+          font-weight: bold;
+          color: #212529;
+          margin-bottom: 5px;
+        }
+
+        .email-meta {
+          font-size: 12px;
+          color: #6c757d;
+          margin-bottom: 3px;
+        }
+
+        .email-attachment {
+          font-size: 11px;
+          color: #007bff;
+          margin-top: 5px;
+        }
+
+        /* 詳細パネル */
+        .detail-area {
           flex: 2;
           display: flex;
           flex-direction: column;
           gap: 20px;
         }
 
-        .dropzone {
+        .hint-box {
+          background: #e9ecef;
+          border: 2px dashed #adb5bd;
+          border-radius: 8px;
+          padding: 30px;
+          text-align: center;
+          color: #6c757d;
+          font-style: italic;
+        }
+
+        .email-detail {
+          background: white;
+          border: 1px solid #dee2e6;
+          border-radius: 8px;
+          padding: 20px;
+        }
+
+        .email-detail h3 {
+          margin-top: 0;
+          color: #212529;
+          border-bottom: 2px solid #e9ecef;
+          padding-bottom: 10px;
+        }
+
+        .detail-row {
+          margin: 10px 0;
+          color: #495057;
+        }
+
+        .detail-row .label {
+          font-weight: bold;
+          color: #6c757d;
+          display: inline-block;
+          width: 80px;
+        }
+
+        /* 添付ファイルボックス */
+        .attachment-box {
+          background: #f8f9fa;
+          border: 2px solid #4a9eff;
+          border-radius: 8px;
+          padding: 15px;
+          margin-top: 15px;
+          cursor: move;
+          transition: all 0.2s;
+          display: inline-block;
+        }
+
+        .attachment-box.dragging {
+          opacity: 0.5;
+          transform: rotate(3deg);
+        }
+
+        .attachment-box:hover {
+          background: #e7f3ff;
+          box-shadow: 0 2px 8px rgba(74, 158, 255, 0.3);
+        }
+
+        .attachment-icon {
+          font-size: 24px;
+          margin-right: 10px;
+        }
+
+        .attachment-name {
+          font-weight: bold;
+          color: #212529;
+        }
+
+        .drag-hint {
+          font-size: 12px;
+          color: #6c757d;
+          margin-top: 5px;
+        }
+
+        /* スキャンゾーン */
+        .scan-zone {
           background: #e3f2fd;
           border: 3px dashed #90caf9;
           border-radius: 8px;
           padding: 25px;
-          min-height: 150px;
+          min-height: 200px;
           transition: all 0.3s;
         }
 
-        .dropzone:hover {
+        .scan-zone:hover {
           border-color: #42a5f5;
           background: #bbdefb;
         }
 
-        .dropzone.success {
-          background: #e8f5e9;
-          border-color: #66bb6a;
+        .scan-zone.alert {
+          background: #ffebee;
+          border-color: #ef5350;
         }
 
-        .dropzone h3 {
+        .scan-zone h3 {
           margin-top: 0;
           color: #1976d2;
         }
 
-        .dropzone.success h3 {
-          color: #388e3c;
+        .scan-zone.alert h3 {
+          color: #c62828;
         }
 
-        .hint {
-          text-align: center;
-          color: #999;
-          font-style: italic;
-          padding: 30px;
-        }
-
-        .result {
+        .scan-result {
           background: white;
           border-radius: 6px;
           padding: 15px;
-          margin-top: 10px;
+          margin-top: 15px;
+          font-family: 'Courier New', monospace;
+          white-space: pre-wrap;
+          color: #212529;
+          line-height: 1.6;
         }
 
-        .result.success {
-          color: #2e7d32;
-          border-left: 4px solid #66bb6a;
-        }
-
-        .result.fail {
-          color: #c62828;
-          border-left: 4px solid #ef5350;
-        }
-
+        /* 完了メッセージ */
         .completion-message {
-          background: #f1f8e9;
+          background: linear-gradient(135deg, #f1f8e9 0%, #dcedc8 100%);
           border: 2px solid #aed581;
-          border-radius: 8px;
-          padding: 25px;
+          border-radius: 12px;
+          padding: 30px;
           margin: 30px 0;
           text-align: center;
+          animation: slideIn 0.5s ease-out;
         }
 
         .completion-message h3 {
           color: #558b2f;
           margin-top: 0;
+          font-size: 24px;
         }
 
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .btn-primary {
+          background: #4a9eff;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          padding: 12px 24px;
+          font-size: 16px;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+          background: #3b8fe0;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(74, 158, 255, 0.4);
+        }
+
+        /* 解説エリア */
         .explain {
           background: #fff3e0;
           border-left: 4px solid #ff9800;
