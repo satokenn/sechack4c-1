@@ -55,9 +55,27 @@ export default function Phase5({ onNext }: { onNext?: () => void }) {
   }
 
   return (
-    <div className="phase5">
-      <h2>フェーズ5：横展開調査と駆除</h2>
-      <p>フェーズ4で特定したIPと件名を使って横展開を確認し、対処を行ってください。</p>
+    <div style={{ display: 'grid', gridTemplateColumns: '250px 1fr 250px', gap: '20px', padding: '20px', maxWidth: '1600px', margin: '0 auto' }}>
+      {/* 左サイドバー */}
+      <aside style={{ padding: '16px', backgroundColor: '#fffaf0', borderRadius: '8px', border: '2px solid #fbd38d' }}>
+        <h3 style={{ marginTop: 0, fontSize: '0.95rem', color: '#7c2d12' }}>📋 Phase4からの情報</h3>
+        <div style={{ fontSize: '0.85em', marginBottom: '12px', padding: '10px', backgroundColor: '#fff', borderRadius: '4px' }}>
+          <strong>🔍 マルウェア検出</strong><br/>
+          ファイル: invoice_malware.exe<br/>
+          感染: 鈴木さんのPC
+        </div>
+        <div style={{ fontSize: '0.85em', padding: '10px', backgroundColor: '#fff', borderRadius: '4px' }}>
+          <strong>📧 侵入経路</strong><br/>
+          標的型メール<br/>
+          C&Cサーバー: 203.0.113.10<br/>
+          ドメイン: evil-domain.net
+        </div>
+      </aside>
+
+      {/* メイン画面 */}
+      <div className="phase5">
+        <h2 style={{ textAlign: 'center', marginBottom: '8px' }}>フェーズ5：横展開調査と駆除</h2>
+        <p style={{ textAlign: 'center', marginBottom: '16px' }}>フェーズ4で特定したIPと件名を使って横展開を確認し、対処を行ってください。</p>
 
       <section>
         <h3>全社通信ログ検索（IP）</h3>
@@ -122,6 +140,25 @@ export default function Phase5({ onNext }: { onNext?: () => void }) {
           <button disabled={!complete} onClick={() => onNext && onNext()}>次へ（Phase6）</button>
         </div>
       </section>
+      </div>
+
+      {/* 右サイドバー */}
+      <aside style={{ padding: '16px', backgroundColor: '#fef2f2', borderRadius: '8px', border: '2px solid #fca5a5' }}>
+        <h3 style={{ marginTop: 0, fontSize: '0.95rem', color: '#7f1d1d' }}>⚠️ 注意事項</h3>
+        <div style={{ fontSize: '0.85em', marginBottom: '12px', padding: '10px', backgroundColor: '#fff', borderRadius: '4px' }}>
+          <strong>🎯 クリア条件</strong><br/>
+          ① 通信ログ調査完了<br/>
+          ② メール調査完了<br/>
+          ③ メール削除実行<br/>
+          ④ マルウェア駆除実行
+        </div>
+        <div style={{ fontSize: '0.85em', padding: '10px', backgroundColor: '#fff', borderRadius: '4px' }}>
+          <strong>💡 調査のヒント</strong><br/>
+          ・C&CサーバーのIPで検索<br/>
+          ・件名「請求書」で検索<br/>
+          ・送信元ドメインを確認
+        </div>
+      </aside>
     </div>
   )
 }

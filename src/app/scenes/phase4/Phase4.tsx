@@ -19,20 +19,24 @@ const ITEMS: Item[] = [
 ]
 
 export default function Phase4({ onNext }: Phase4Props) {
-  const [draggedItem, setDraggedItem] = useState<ItemType | null>(null)
+  const [selectedEmail, setSelectedEmail] = useState<Email | null>(null)
+  const [draggedAttachment, setDraggedAttachment] = useState<SelectedEmail | null>(null)
   const [scanResult, setScanResult] = useState<string>('')
-  const [logResult, setLogResult] = useState<string>('')
-  const [scanSuccess, setScanSuccess] = useState(false)
-  const [logSuccess, setLogSuccess] = useState(false)
+  const [foundMalware, setFoundMalware] = useState(false)
 
-  const allCompleted = scanSuccess && logSuccess
+  function handleEmailClick(email: Email) {
+    setSelectedEmail(email)
+    setScanResult('') // リセット
+  }
 
-  function handleDragStart(itemId: ItemType) {
-    setDraggedItem(itemId)
+  function handleDragStart(email: Email) {
+    if (email.attachment) {
+      setDraggedAttachment({ email, attachment: email.attachment })
+    }
   }
 
   function handleDragEnd() {
-    setDraggedItem(null)
+    setDraggedAttachment(null)
   }
 
   function handleDropOnScan(e: React.DragEvent) {

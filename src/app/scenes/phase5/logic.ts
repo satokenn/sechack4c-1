@@ -1,57 +1,77 @@
-import { bulkDeleteEmailsBySubject, getCommunicationsByIP, getEmailsBySubject, remediateHostByIP, resetMockStores } from '../../services/logs'
+import { 
+  getCommunicationsByHostname, 
+  getCommunicationsByIP, 
+  getEmailsByFrom, 
+  getEmailsBySubject, 
+  deleteEmailsByIds,
+  remediateHostsByNames,
+  resetMockStores,
+  type CommunicationRecord,
+  type EmailRecord
+} from '../../services/logs'
 
 export type Phase5ActionFlags = {
-  communicationSearched: boolean
-  emailSearched: boolean
-  emailDeleted: boolean
-  malwareRemediated: boolean
+  maliciousHostsIdentified: string[]
+  maliciousEmailsDeleted: number
+  hostsRemediated: string[]
 }
 
 const state: Phase5ActionFlags = {
-  communicationSearched: false,
-  emailSearched: false,
-  emailDeleted: false,
-  malwareRemediated: false
+  maliciousHostsIdentified: [],
+  maliciousEmailsDeleted: 0,
+  hostsRemediated: []
 }
 
 export function resetPhase5State() {
-  state.communicationSearched = false
-  state.emailSearched = false
-  state.emailDeleted = false
-  state.malwareRemediated = false
+  state.maliciousHostsIdentified = []
+  state.maliciousEmailsDeleted = 0
+  state.hostsRemediated = []
   resetMockStores()
 }
 
-export function searchCommunications(ip: string) {
-  const results = getCommunicationsByIP(ip)
-  if (results.length > 0) state.communicationSearched = true
-  return results
+export function searchCommunicationsByIP(ip: string): CommunicationRecord[] {
+  return getCommunicationsByIP(ip)
 }
 
-export function searchEmails(subject: string) {
-  const results = getEmailsBySubject(subject)
-  if (results.length > 0) state.emailSearched = true
-  return results
+export function searchCommunicationsByHostname(hostname: string): CommunicationRecord[] {
+  return getCommunicationsByHostname(hostname)
 }
 
-export function deleteEmails(subject: string) {
-  const { deleted } = bulkDeleteEmailsBySubject(subject)
-  if (deleted > 0) state.emailDeleted = true
-  return { deleted }
+export function searchEmailsBySubject(subject: string): EmailRecord[] {
+  return getEmailsBySubject(subject)
 }
 
-export function remediateMalware(ip: string) {
-  const { remediated } = remediateHostByIP(ip)
-  if (remediated) state.malwareRemediated = true
-  return { remediated }
+export function searchEmailsByFrom(from: string): EmailRecord[] {
+  return getEmailsByFrom(from)
+}
+
+export function identifyMaliciousHost(hostname: string) {
+  if (!state.maliciousHostsIdentified.includes(hostname)) {
+    state.maliciousHostsIdentified.push(hostname)
+  }
+}
+
+export function deleteSelectedEmails(emailIds: string[]): { success: number; failed: number; errors: string[] } {
+  const result = deleteEmailsByIds(emailIds)
+  state.maliciousEmailsDeleted += result.success
+  return result
+}
+
+export function remediateSelectedHosts(hostnames: string[]): { success: number; failed: number; errors: string[] } {
+  const result = remediateHostsByNames(hostnames)
+  for (const hostname of hostnames) {
+    if (!state.hostsRemediated.includes(hostname)) {
+      state.hostsRemediated.push(hostname)
+    }
+  }
+  return result
 }
 
 export function isPhase5Complete(): boolean {
   return (
-    state.communicationSearched &&
-    state.emailSearched &&
-    state.emailDeleted &&
-    state.malwareRemediated
+    state.maliciousHostsIdentified.length >= 2 &&
+    state.maliciousEmailsDeleted >= 2 &&
+    state.hostsRemediated.length >= 2
   )
 }
 
