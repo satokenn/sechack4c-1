@@ -1,0 +1,41 @@
+/* Phase2-specific styles */
+.phase2 h2 { color:#1a202c; margin-bottom:8px; }
+.phase2 > p { color:#4a5568; margin-bottom:16px; }
+
+.dashboard { display:flex; gap:16px; margin-top:16px; }
+.status-panel, .alerts-panel { flex:1; background:#f7fafc; border:1px solid #e2e8f0; border-radius:8px; padding:16px; }
+.status-panel h3, .alerts-panel h3 { font-size:16px; margin-bottom:12px; color:#2d3748; }
+.status-panel ul { list-style:none; padding:0; margin:0; }
+.status-panel li { padding:6px 0; color:#4a5568; }
+.status-warning { color:#c53030; font-weight:600; }
+
+.alert-item { display:flex; align-items:center; gap:12px; padding:12px; background:#fff; border:2px solid #fc8181; border-radius:8px; cursor:pointer; animation:pulse 1.5s ease-in-out infinite; }
+.alert-item:hover { background:#fff5f5; border-color:#e53e3e; }
+.alert-badge { background:#c53030; color:#fff; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:700; }
+.alert-time { color:#718096; font-size:14px; white-space:nowrap; }
+.alert-message { flex:1; color:#2d3748; }
+.alert-action { color:#2b6cb0; font-size:14px; white-space:nowrap; }
+
+@keyframes pulse {
+  0%, 100% { opacity:1; }
+  50% { opacity:0.7; }
+}
+
+.modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:1000; }
+.modal-content { background:#fff; border-radius:12px; max-width:600px; width:90%; max-height:80vh; overflow:auto; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+.modal-header { display:flex; justify-content:space-between; align-items:center; padding:20px; border-bottom:1px solid #e2e8f0; }
+.modal-header h3 { margin:0; color:#1a202c; }
+.close-btn { background:transparent; border:none; font-size:24px; color:#a0aec0; cursor:pointer; padding:0; width:32px; height:32px; }
+.close-btn:hover { color:#2d3748; }
+
+.modal-body { padding:20px; }
+.detail-row { display:flex; padding:12px 0; border-bottom:1px solid #f7fafc; }
+.detail-label { flex:0 0 120px; color:#718096; font-weight:600; }
+.detail-value { flex:1; color:#2d3748; }
+.detail-value.highlight { background:#fef5e7; padding:4px 8px; border-radius:4px; font-weight:600; color:#c53030; }
+.severity-high { color:#c53030; font-weight:700; }
+
+.modal-footer { padding:20px; background:#f7fafc; border-top:1px solid #e2e8f0; }
+.next-action { color:#4a5568; margin-bottom:12px; line-height:1.6; }
+.next-action strong { color:#2b6cb0; }
+.modal-footer .btn-primary { width:100%; padding:12px; }
