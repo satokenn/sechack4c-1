@@ -1,0 +1,60 @@
+import { bulkDeleteEmailsBySubject, getCommunicationsByIP, getEmailsBySubject, remediateHostByIP, resetMockStores } from '../../services/logs'
+
+export type Phase5ActionFlags = {
+  communicationSearched: boolean
+  emailSearched: boolean
+  emailDeleted: boolean
+  malwareRemediated: boolean
+}
+
+const state: Phase5ActionFlags = {
+  communicationSearched: false,
+  emailSearched: false,
+  emailDeleted: false,
+  malwareRemediated: false
+}
+
+export function resetPhase5State() {
+  state.communicationSearched = false
+  state.emailSearched = false
+  state.emailDeleted = false
+  state.malwareRemediated = false
+  resetMockStores()
+}
+
+export function searchCommunications(ip: string) {
+  const results = getCommunicationsByIP(ip)
+  if (results.length > 0) state.communicationSearched = true
+  return results
+}
+
+export function searchEmails(subject: string) {
+  const results = getEmailsBySubject(subject)
+  if (results.length > 0) state.emailSearched = true
+  return results
+}
+
+export function deleteEmails(subject: string) {
+  const { deleted } = bulkDeleteEmailsBySubject(subject)
+  if (deleted > 0) state.emailDeleted = true
+  return { deleted }
+}
+
+export function remediateMalware(ip: string) {
+  const { remediated } = remediateHostByIP(ip)
+  if (remediated) state.malwareRemediated = true
+  return { remediated }
+}
+
+export function isPhase5Complete(): boolean {
+  return (
+    state.communicationSearched &&
+    state.emailSearched &&
+    state.emailDeleted &&
+    state.malwareRemediated
+  )
+}
+
+export function getPhase5Flags(): Phase5ActionFlags {
+  return { ...state }
+}
