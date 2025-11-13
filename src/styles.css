@@ -17,5 +17,14 @@ body {
 .option.selected { border-color:#2b6cb0; background: #ebf8ff }
 .actions { margin-top:12px }
 .btn-primary { background:#2b6cb0; color:white; padding:8px 12px; border:none; border-radius:6px }
-.result.success { border-left:4px solid #38a169; padding:12px; background:#f0fff4 }
-.result.failure { border-left:4px solid #e53e3e; padding:12px; background:#fff5f5 }
+.result.success { border-left:4px solid #38a169; padding:16px; background:#f0fff4; border-radius:6px; margin-top:16px }
+.result.failure { border-left:4px solid #e53e3e; padding:16px; background:#fff5f5; border-radius:6px; margin-top:16px }
+.result h2 { margin-top:0; margin-bottom:12px; font-size:1.3em }
+.result h3 { margin-top:12px; margin-bottom:8px; font-size:1.1em; color:#2d3748 }
+.failure-explanation { background:#fff; padding:12px; border-radius:6px; margin:12px 0; border:1px solid #fed7d7 }
+.success-explanation { background:#fff; padding:12px; border-radius:6px; margin:12px 0; border:1px solid #c6f6d5 }
+.explanation-text { margin:8px 0; line-height:1.6; color:#2d3748 }
+.correct-answer-hint { background:#fffaf0; padding:12px; border-radius:6px; margin:12px 0; border:1px solid #fbd38d }
+.correct-answer-hint p { margin:6px 0; line-height:1.6 }
+.btn-retry { background:#e53e3e; color:white; padding:10px 16px; border:none; border-radius:6px; cursor:pointer; font-size:1em; margin-top:8px }
+.btn-retry:hover { background:#c53030 }
