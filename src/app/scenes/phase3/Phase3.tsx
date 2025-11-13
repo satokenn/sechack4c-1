@@ -7,7 +7,11 @@ const OPTIONS = [
   { id: 'monitor', label: '監視継続（状況をさらに観察する）', correct: false }
 ]
 
-export default function Phase3() {
+interface Phase3Props {
+  onNext?: () => void
+}
+
+export default function Phase3({ onNext }: Phase3Props) {
   const [selected, setSelected] = useState<string | null>(null)
   const [result, setResult] = useState<'idle' | 'success' | 'failure'>('idle')
 
@@ -49,7 +53,10 @@ export default function Phase3() {
         <div className="result success">
           <h2>成功！物理的隔離で被害拡大を止めました。</h2>
           <p>次のフェーズ（調査・分析）へ進みます。</p>
-          <button onClick={retry}>もう一度（開発用）</button>
+          <div className="actions">
+            {onNext && <button onClick={onNext} className="btn-primary">次のフェーズへ</button>}
+            <button onClick={retry}>もう一度（開発用）</button>
+          </div>
         </div>
       )}
 

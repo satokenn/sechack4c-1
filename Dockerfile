@@ -13,6 +13,8 @@ RUN npm install --legacy-peer-deps
 
 # 残りのソースをまとめてコピー
 COPY tsconfig.json ./
+COPY vite.config.ts ./
+COPY index.html ./
 COPY src ./src
 COPY tests ./tests
 
