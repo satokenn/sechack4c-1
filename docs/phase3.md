@@ -117,30 +117,25 @@
 
 ## 🔄 未完成のタスク
 
-### コミットと Git 管理
-- **状態**: 未着手
-- **内容**: 
-  - 変更ファイルの `git add` と `git commit`
-  - ブランチの push（`git push -u origin feature/phase3-isolation`）
-  - プルリクエスト（PR）の作成
-- **備考**: 
-  - 現在 `main` ブランチ上で作業しているため、worktree または新規ブランチへの移行が必要
-  - `dist/` ディレクトリは `.gitignore` に追加すべき（ビルド成果物は通常コミットしない）
+### ✅ コミットと Git 管理（完了）
+- **状態**: 完了
+- **実施内容**: 
+  - ✅ `.gitignore` ファイルの作成
+  - ✅ 変更ファイルの `git add` と `git commit`（コミット: `0a7cbb7`）
+  - ✅ `feature/phase3-isolation` ブランチの作成とworktree設定
+  - ✅ ブランチの push（`git push -u origin feature/phase3-isolation`）
+  - ⏳ プルリクエスト（PR）の作成 — **次のステップ**
+- **成果物**: 
+  - リモートブランチ: `origin/feature/phase3-isolation`
+  - PR作成用URL: https://github.com/satokenn/sechack4c-1/pull/new/feature/phase3-isolation
 
-### .gitignore の整備
-- **状態**: 未着手
-- **内容**:
-  - `node_modules/` の除外
-  - `dist/` の除外
-  - `.env` や `.DS_Store` などの一般的な除外設定
-- **推奨内容**:
-  ```
-  node_modules/
-  dist/
-  .env
-  .DS_Store
-  *.log
-  ```
+### ✅ .gitignore の整備（完了）
+- **状態**: 完了
+- **実施内容**:
+  - ✅ `node_modules/` の除外
+  - ✅ `dist/` の除外
+  - ✅ `.env`、`.DS_Store`、ログファイルなどの除外設定
+- **成果物**: `.gitignore` ファイルが作成され、コミット済み
 
 ---
 
@@ -191,19 +186,15 @@ docker compose -f docker-compose.dev.yml exec app npm run build
 
 ## 次のステップ（推奨）
 
-### 1. Git 管理の整備
-- [ ] `.gitignore` ファイルを作成して `dist/` と `node_modules/` を除外
-- [ ] 変更ファイルを `git add` でステージング
-- [ ] コミットメッセージ例:
+### 1. Git 管理の整備 ✅ 完了
+- [x] `.gitignore` ファイルを作成して `dist/` と `node_modules/` を除外
+- [x] 変更ファイルを `git add` でステージング
+- [x] コミットメッセージで実装内容を記録:
   ```
-  feat(phase3): implement Phase3 isolation UI and dev environment
-  
-  - Add React + TypeScript single-choice UI for Phase3
-  - Integrate Vite dev server and Docker Compose setup
-  - Add unit tests for isolation logic with Vitest
-  - Verify build, type-check, and browser functionality
+  docs(phase3): add implementation record and gitignore
   ```
-- [ ] ブランチを push して PR を作成
+- [x] ブランチを push して PR を作成
+  - PR作成URL: https://github.com/satokenn/sechack4c-1/pull/new/feature/phase3-isolation
 
 ### 2. コードレビューと改善
 - [ ] Phase3 コンポーネントのアクセシビリティ改善（ARIA ラベル、キーボード操作）
