@@ -19,5 +19,5 @@ COPY src ./src
 COPY tests ./tests
 
 # デフォルトは開発用の実行コマンド
-# npm scripts が整備されるまでは `npm run dev` と読み替える
-CMD ["npm", "run", "dev"]
+# ボリュームマウント時にも node_modules を確保するため、起動時にインストールを実行
+CMD ["sh", "-c", "npm install --legacy-peer-deps && npm run dev -- --host"]

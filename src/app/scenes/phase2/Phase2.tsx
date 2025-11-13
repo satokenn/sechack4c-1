@@ -2,7 +2,11 @@ import React, { useState } from 'react'
 import { getAlertData, type AlertData } from './logic'
 import './phase2.css'
 
-export default function Phase2() {
+interface Phase2Props {
+  onNext?: () => void
+}
+
+export default function Phase2({ onNext }: Phase2Props) {
   const [showDetail, setShowDetail] = useState(false)
   const alert = getAlertData()
 
@@ -85,9 +89,11 @@ export default function Phase2() {
               <p className="next-action">
                 ➡ 次のステップ: 被害拡大を防ぐため、速やかに<strong>隔離対応</strong>を実施してください
               </p>
-              <button className="btn-primary" onClick={handleCloseDetail}>
-                了解（次フェーズへ）
-              </button>
+              {onNext && (
+                <button className="btn-primary" onClick={onNext}>
+                  次へ（初動対応フェーズ）
+                </button>
+              )}
             </div>
           </div>
         </div>
